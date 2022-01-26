@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  jira-echo:
+    image: yarche/jira-echo:${TAG:-v1.0.0}
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./:/app
+    environment:
+      - PORT=80
+      - PROJECT_ID=10546
+      - ISSUE_TYPE_ID=10002
+      #      - JIRA_DNS=comtravo.atlassian.net
+    ports:
+      - "80:80"
+    command: ["node", "server.js"]
