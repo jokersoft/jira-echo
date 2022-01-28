@@ -22,7 +22,7 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
         run: |
-          docker compose build jira-echo -t yarche/jira-echo:latest
+          docker build -t yarche/jira-echo:latest .
           docker tag yarche/jira-echo:latest yarche/jira-echo:${GITHUB_SHA::7}
           docker tag yarche/jira-echo:latest yarche/jira-echo:${TAG}
       - name: docker push
