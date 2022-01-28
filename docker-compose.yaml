@@ -10,8 +10,8 @@ services:
       - ./:/app
     environment:
       - PORT=80
-      - PROJECT_ID=10546
-      - ISSUE_TYPE_ID=10002
+      - PROJECT_ID=10545
+      - ISSUE_TYPE_ID=10004
       - SECRET_USER=${SECRET_USER}
       - SECRET_TOKEN=${SECRET_TOKEN}
       - JIRA_DNS=${JIRA_DNS:-jira-echo.requestcatcher.com}
