@@ -12,7 +12,9 @@ services:
       - PORT=80
       - PROJECT_ID=10546
       - ISSUE_TYPE_ID=10002
-      #      - JIRA_DNS=comtravo.atlassian.net
+      - SECRET_USER=${SECRET_USER}
+      - SECRET_TOKEN=${SECRET_TOKEN}
+      - JIRA_DNS=${JIRA_DNS:-jira-echo.requestcatcher.com}
     ports:
       - "80:80"
     command: ["node", "server.js"]
