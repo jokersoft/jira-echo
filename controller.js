@@ -56,7 +56,7 @@ function createTicket(globalRequest, globalResponse) {
                     id: PROJECT_ID
                 },
             summary: summary,
-            description: description,
+            description: 'this is an automatically created ticket',
             issuetype: {
                 id: ISSUE_TYPE_ID
             }
