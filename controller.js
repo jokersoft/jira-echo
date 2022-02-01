@@ -22,7 +22,7 @@ const authMiddleware = (req, res, next) => {
 };
 
 function prepareAuthorizationHeader() {
-    return 'Basic ' + Buffer.from(process.env.SECRET_USER + ':' + process.env.SECRET_TOKEN).toString('base64');
+    return 'Basic ' + Buffer.from(process.env.JIRA_USER + ':' + process.env.JIRA_TOKEN).toString('base64');
 }
 
 function gateway() {
