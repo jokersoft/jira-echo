@@ -13,14 +13,13 @@ const express = require('express');
 
 const authMiddleware = (req, res, next) => {
     console.log('authMiddleware hit');
+    const { authorization } = req.headers;
+    let expectedAuthHeaderValue = prepareAuthorizationHeader();
+
     if (AUTHORIZATION_ENABLED == 0) {
         console.debug('AUTHORIZATION DISABLED!');
         next();
-    }
-
-    const { authorization } = req.headers;
-    let expectedAuthHeaderValue = prepareAuthorizationHeader();
-    if (authorization && authorization.includes(expectedAuthHeaderValue)) {
+    } else if (authorization && authorization.includes(expectedAuthHeaderValue)) {
         console.debug('jira-echo authorization passed');
         next();
     } else {
