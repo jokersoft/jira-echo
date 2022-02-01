@@ -24,7 +24,7 @@ const authMiddleware = (req, res, next) => {
         next();
     } else {
         console.log('forbidden');
-        res.sendStatus(403);
+        res.sendStatus(503);
     }
 };
 
@@ -137,6 +137,7 @@ function listWebhooks(globalRequest, globalResponse) {
 }
 
 function health(request, response) {
+    console.log('health hit');
     response.status(200).send('{"status":"OK"}');
 }
 
