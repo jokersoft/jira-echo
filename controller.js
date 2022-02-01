@@ -100,6 +100,8 @@ function createTicket(globalRequest, globalResponse) {
         }
     }
 
+    console.debug('requestData');
+    console.debug(requestData);
     console.debug('options');
     console.debug(options);
 
@@ -108,6 +110,8 @@ function createTicket(globalRequest, globalResponse) {
         res.on('data', function (chunk) {responseData += chunk;});
         res.on('end', function () {
             console.debug('createTicket success');
+            console.debug('responseData');
+            console.debug(responseData);
             return globalResponse.status(res.statusCode).send(responseData);
         });
     })
