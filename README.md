@@ -6,3 +6,4 @@
 ## TODO
 - tests
 - create and use Bot identity
+- check if there's any value in https://www.npmjs.com/package/jira.js

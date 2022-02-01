@@ -13,6 +13,9 @@ app.use('/api', authMiddleware, gateway());
 app.get('/health', (request, response) => {
   controller.health(request, response);
 });
+app.get('/', (request, response) => {
+  controller.health(request, response);
+});
 
 const server = app.listen(PORT, () => {
   const host = server.address().address
