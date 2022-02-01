@@ -56,7 +56,20 @@ function createTicket(globalRequest, globalResponse) {
     let summary = ticket.fields.summary;
     let description = ticket.fields.description;
 
-    console.debug(ticket);
+    console.debug('id:');
+    console.debug(ticket.id);
+    console.debug('key:');
+    console.debug(ticket.key);
+    console.debug('issue type:');
+    console.debug(ticket.fields.issuetype.name);
+    console.debug('issue status:');
+    console.debug(ticket.fields.status.name);
+    console.debug('project:');
+    console.debug(ticket.fields.project.name);
+    console.debug('summary:');
+    console.debug(summary);
+    console.debug('description:');
+    console.debug(description);
 
     // prepare request
     let ticketRequest = {
@@ -81,7 +94,7 @@ function createTicket(globalRequest, globalResponse) {
         path: '/rest/api/2/issue/',
         method: 'POST',
         headers: {
-            'Authorization': authorization ?? '',
+            'Authorization': authorization ?? null,
             'Content-Type': 'application/json',
             'Content-Length': requestData.length
         }
