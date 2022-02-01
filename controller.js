@@ -12,7 +12,8 @@ const https = require('https');
 const express = require('express');
 
 const authMiddleware = (req, res, next) => {
-    if (AUTHORIZATION_ENABLED === "0") {
+    console.log('authMiddleware hit');
+    if (AUTHORIZATION_ENABLED == 0) {
         console.debug('AUTHORIZATION DISABLED!');
         next();
     }
@@ -23,7 +24,7 @@ const authMiddleware = (req, res, next) => {
         console.debug('jira-echo authorization passed');
         next();
     } else {
-        console.debug('Forbidden');
+        console.log('forbidden');
         res.sendStatus(403);
     }
 };
