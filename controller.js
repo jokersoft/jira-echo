@@ -81,7 +81,7 @@ function createTicket(globalRequest, globalResponse) {
         path: '/rest/api/2/issue/',
         method: 'POST',
         headers: {
-            'Authorization': authorization,
+            'Authorization': authorization ?? '',
             'Content-Type': 'application/json',
             'Content-Length': requestData.length
         }
