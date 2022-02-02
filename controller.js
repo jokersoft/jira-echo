@@ -66,6 +66,8 @@ function createTicket(globalRequest, globalResponse) {
     let ticket = globalRequest.body.issue;
     let summary = ticket.fields.summary;
     let description = ticket.fields.description;
+    let requestTypeId = ticket.fields.customfield_10617.requestType.id;
+    let requestTypeName = ticket.fields.customfield_10617.requestType.name;
 
     console.debug('eventType: ' + eventType);
     console.debug('id: ' + ticket.id);
@@ -75,6 +77,8 @@ function createTicket(globalRequest, globalResponse) {
     console.debug('project: ' + ticket.fields.project.name);
     console.debug('summary: ' + summary);
     console.debug('description: ' + description);
+    console.debug('requestTypeId: ' + requestTypeId);
+    console.debug('requestTypeName: ' + requestTypeName);
 
     // prepare request
     let ticketRequest = {
