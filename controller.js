@@ -19,12 +19,15 @@ const authMiddleware = (req, res, next) => {
     if (AUTHORIZATION_ENABLED == 0) {
         console.debug('AUTHORIZATION DISABLED!');
         next();
+    } else if (req.query.authorization && req.query.authorization.includes(expectedAuthHeaderValue)) {
+        console.debug('jira-echo query authorization passed');
+        next();
     } else if (authorization && authorization.includes(expectedAuthHeaderValue)) {
-        console.debug('jira-echo authorization passed');
+        console.debug('jira-echo header authorization passed');
         next();
     } else {
         console.log('forbidden');
-        res.sendStatus(503);
+        res.sendStatus(403);
     }
 };
 
@@ -82,7 +85,7 @@ function createTicket(globalRequest, globalResponse) {
         }
     };
 
-    const { authorization } = globalRequest.headers;
+    const authorizationHeader = prepareAuthorizationHeader();
     const requestData = JSON.stringify(ticketRequest);
     const options = {
         hostname: JIRA_DNS,
@@ -90,7 +93,7 @@ function createTicket(globalRequest, globalResponse) {
         path: '/rest/api/2/issue/',
         method: 'POST',
         headers: {
-            'Authorization': authorization ?? null,
+            'Authorization': authorizationHeader,
             'Content-Type': 'application/json',
             'Content-Length': requestData.length
         }
@@ -105,7 +108,8 @@ function createTicket(globalRequest, globalResponse) {
         let responseData = '';
         res.on('data', function (chunk) {responseData += chunk;});
         res.on('end', function () {
-            console.debug('createTicket success');
+            console.debug('createTicket attempt complete');
+            console.debug('responseCode: ' + res.statusCode);
             console.debug('responseData');
             console.debug(responseData);
             return globalResponse.status(res.statusCode).send(responseData);
