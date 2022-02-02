@@ -78,10 +78,27 @@ function createTicket(globalRequest, globalResponse) {
                     id: PROJECT_ID
                 },
             summary: summary,
-            description: 'this is an automatically created ticket',
+            description: description,
             issuetype: {
                 id: ISSUE_TYPE_ID
-            }
+            },
+            labels: ["jira-echo"]
+        },
+        update: {
+            issuelinks: [
+                {
+                    add: {
+                        type: {
+                            name: "Relates",
+                            inward: "is caused by",
+                            outward: "causes"
+                        },
+                        inwardIssue: {
+                            key: ticket.key
+                        }
+                    }
+                }
+            ],
         }
     };
 
