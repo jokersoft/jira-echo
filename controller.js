@@ -1,12 +1,12 @@
 const AUTHORIZATION_ENABLED = process.env.AUTHORIZATION_ENABLED;
 const DEFAULT_JIRA_PORT = 443;
 const DEFAULT_JIRA_DNS = 'jira-echo.requestcatcher.com';
-const DEFAULT_PROJECT_ID = 10546;
-const DEFAULT_ISSUE_TYPE_ID = 10002;
+const DEFAULT_PROJECT_ID = 10545;
+const DEFAULT_ISSUE_TYPE_ID = 10004;
 const JIRA_DNS = process.env.JIRA_DNS ?? DEFAULT_JIRA_DNS;
 const JIRA_PORT = process.env.JIRA_PORT ?? DEFAULT_JIRA_PORT;
-const PROJECT_ID = DEFAULT_PROJECT_ID ?? process.env.PROJECT_ID;
-const ISSUE_TYPE_ID = DEFAULT_ISSUE_TYPE_ID ?? process.env.JIRA_URL;
+const PROJECT_ID = process.env.PROJECT_ID ?? DEFAULT_PROJECT_ID;
+const ISSUE_TYPE_ID = process.env.ISSUE_TYPE_ID ?? DEFAULT_ISSUE_TYPE_ID;
 
 const https = require('https');
 const express = require('express');
@@ -37,6 +37,7 @@ function gateway() {
     router.post('/ticket-created', (request, response) => {
         console.debug('createTicket attempt');
         createTicket(request, response);
+        //TODO: alert ticket creation
     });
 
     router.get('/webhooks', (request, response) => {
@@ -52,24 +53,19 @@ function gateway() {
 
 function createTicket(globalRequest, globalResponse) {
     // parse info about created ticket
+    let eventType = globalRequest.body.webhookEvent
     let ticket = globalRequest.body.issue;
     let summary = ticket.fields.summary;
     let description = ticket.fields.description;
 
-    console.debug('id:');
-    console.debug(ticket.id);
-    console.debug('key:');
-    console.debug(ticket.key);
-    console.debug('issue type:');
-    console.debug(ticket.fields.issuetype.name);
-    console.debug('issue status:');
-    console.debug(ticket.fields.status.name);
-    console.debug('project:');
-    console.debug(ticket.fields.project.name);
-    console.debug('summary:');
-    console.debug(summary);
-    console.debug('description:');
-    console.debug(description);
+    console.debug('eventType: ' + eventType);
+    console.debug('id: ' + ticket.id);
+    console.debug('key: ' + ticket.key);
+    console.debug('issue type: ' + ticket.fields.issuetype.name);
+    console.debug('issue status: ' + ticket.fields.status.name);
+    console.debug('project: ' + ticket.fields.project.name);
+    console.debug('summary: ' + summary);
+    console.debug('description: ' + description);
 
     // prepare request
     let ticketRequest = {
@@ -154,7 +150,6 @@ function listWebhooks(globalRequest, globalResponse) {
 }
 
 function health(request, response) {
-    console.log('health hit');
     response.status(200).send('{"status":"OK"}');
 }
 
