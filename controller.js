@@ -127,26 +127,26 @@ function createTicket(globalRequest, globalResponse) {
     console.debug('options');
     console.debug(options);
 
-    // const req = https.request(options, res => {
-    //     let responseData = '';
-    //     res.on('data', function (chunk) {responseData += chunk;});
-    //     res.on('end', function () {
-    //         console.debug('createTicket attempt complete');
-    //         console.debug('responseCode: ' + res.statusCode);
-    //         console.debug('responseData');
-    //         console.debug(responseData);
-    //         return globalResponse.status(res.statusCode).send(responseData);
-    //     });
-    // })
-    //
-    // req.on('error', error => {
-    //     console.error('createTicket error');
-    //     console.error(error.message);
-    //     return globalResponse.status(500).send(error.message);
-    // })
-    //
-    // req.write(requestData)
-    // req.end()
+    const req = https.request(options, res => {
+        let responseData = '';
+        res.on('data', function (chunk) {responseData += chunk;});
+        res.on('end', function () {
+            console.debug('createTicket attempt complete');
+            console.debug('responseCode: ' + res.statusCode);
+            console.debug('responseData');
+            console.debug(responseData);
+            return globalResponse.status(res.statusCode).send(responseData);
+        });
+    })
+
+    req.on('error', error => {
+        console.error('createTicket error');
+        console.error(error.message);
+        return globalResponse.status(500).send(error.message);
+    })
+
+    req.write(requestData)
+    req.end()
 }
 
 function listWebhooks(globalRequest, globalResponse) {
