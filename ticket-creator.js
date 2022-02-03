@@ -1,32 +1,65 @@
-const DEFAULT_PROJECT_ID = process.env.DEFAULT_PROJECT_ID ?? 10545;
-const PROJECT_SHERPA_ID = 10522;
+const PROJECT_ID_BUGS = 10545;
+const PROJECT_ID_SHERPA = 10522;
+const PROJECT_ID_DEFAULT = process.env.PROJECT_ID_DEFAULT ?? PROJECT_ID_BUGS;
 
-const INVOICING_PAYMENT_AND_TAXATION = 49;
-const WORKFLOW_AND_PROCESSES = 52;
-const EXTERNAL_TOOLS = 54;
+const ISSUE_TYPE_ID_BUG = 10004;
+const ISSUE_TYPE_ID_INCIDENT = 10121;
+
+const REQUEST_TYPE_ID_GENERAL_BUG = 48;
+const REQUEST_TYPE_ID_INVOICING_PAYMENT_AND_TAXATION = 49;
+const REQUEST_TYPE_ID_CUSTOMER_BOOKING_EXPERIENCE = 50;
+const REQUEST_TYPE_ID_FLIGHT_AND_TRAIN = 51;
+const REQUEST_TYPE_ID_WORKFLOW_AND_PROCESSES = 52;
+const REQUEST_TYPE_ID_COMPANY_ACCOUNT_AND_USER_MANAGEMENT = 53;
+const REQUEST_TYPE_ID_EXTERNAL_TOOLS = 54;
+const REQUEST_TYPE_ID_ACCOMMODATION = 55;
+const REQUEST_TYPE_ID_RENTAL_CAR = 56;
+const REQUEST_TYPE_ID_TRAVEL_MANAGEMENT = 57;
+const REQUEST_TYPE_ID_CRITICAL_INCIDENT = 58;
 
 const https = require('https');
-const express = require('express');
+const auth = require('./auth');
 
-function getTargetProjectId(requestTypeId) {
-    if (requestTypeId === INVOICING_PAYMENT_AND_TAXATION ||
-        requestTypeId === WORKFLOW_AND_PROCESSES ||
-        requestTypeId === EXTERNAL_TOOLS
-    ) {
-        return PROJECT_SHERPA_ID;
+function getTargetIssueTypeId(requestTypeId) {
+    if (requestTypeId === REQUEST_TYPE_ID_CRITICAL_INCIDENT) {
+        return ISSUE_TYPE_ID_INCIDENT;
     }
 
-    return DEFAULT_PROJECT_ID;
+    return ISSUE_TYPE_ID_BUG;
+}
+
+function getTargetProjectId(requestTypeId) {
+    if (requestTypeId === REQUEST_TYPE_ID_GENERAL_BUG) {
+        return PROJECT_ID_DEFAULT;
+    }
+
+    if (requestTypeId === REQUEST_TYPE_ID_INVOICING_PAYMENT_AND_TAXATION ||
+        requestTypeId === REQUEST_TYPE_ID_WORKFLOW_AND_PROCESSES ||
+        requestTypeId === REQUEST_TYPE_ID_EXTERNAL_TOOLS
+    ) {
+        return PROJECT_ID_SHERPA;
+    }
+
+    return PROJECT_ID_DEFAULT;
 }
 
 function createTicket(globalRequest, globalResponse) {
     // parse info about created ticket
-    let eventType = globalRequest.body.webhookEvent
-    let ticket = globalRequest.body.issue;
-    let summary = ticket.fields.summary;
-    let description = ticket.fields.description;
-    let requestTypeId = ticket.fields.customfield_10617.requestType.id;
-    let requestTypeName = ticket.fields.customfield_10617.requestType.name;
+    const eventType = globalRequest.body.webhookEvent
+    const ticket = globalRequest.body.issue;
+    const summary = ticket.fields.summary;
+    const description = ticket.fields.description;
+    const requestTypeId = ticket.fields.customfield_10617.requestType.id;
+    const requestTypeName = ticket.fields.customfield_10617.requestType.name;
+
+    // if custom field "Request Type" (`customfield_10617`) does not contain input - we cannot address it
+    if (!requestTypeId) {
+        console.error('RequestTypeId not set!');
+        return globalResponse.status(500).send('RequestTypeId not set!');
+    }
+
+    const targetProjectId = getTargetProjectId(requestTypeId);
+    const targetIssueTypeId = getTargetIssueTypeId(requestTypeId);
 
     console.debug('eventType: ' + eventType);
     console.debug('id: ' + ticket.id);
@@ -38,18 +71,19 @@ function createTicket(globalRequest, globalResponse) {
     console.debug('description: ' + description);
     console.debug('requestTypeId: ' + requestTypeId);
     console.debug('requestTypeName: ' + requestTypeName);
+    console.debug('targetProjectId: ' + targetProjectId);
 
     // prepare request
     let ticketRequest = {
         fields: {
             project:
                 {
-                    id: DEFAULT_PROJECT_ID
+                    id: targetProjectId
                 },
             summary: summary,
             description: description,
             issuetype: {
-                id: ISSUE_TYPE_ID
+                id: targetIssueTypeId
             },
             labels: ["jira-echo"]
         },
@@ -71,11 +105,11 @@ function createTicket(globalRequest, globalResponse) {
         }
     };
 
-    const authorizationHeader = prepareAuthorizationHeader();
+    const authorizationHeader = auth.prepareAuthorizationHeader();
     const requestData = JSON.stringify(ticketRequest);
     const options = {
-        hostname: JIRA_DNS,
-        port: JIRA_PORT,
+        hostname: auth.getJiraDns,
+        port: auth.getJiraPort,
         path: '/rest/api/2/issue/',
         method: 'POST',
         headers: {

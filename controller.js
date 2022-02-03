@@ -1,19 +1,14 @@
 const AUTHORIZATION_ENABLED = process.env.AUTHORIZATION_ENABLED;
-const DEFAULT_JIRA_PORT = 443;
-const DEFAULT_JIRA_DNS = 'jira-echo.requestcatcher.com';
-const DEFAULT_PROJECT_ID = process.env.DEFAULT_PROJECT_ID ?? 10545;
-const DEFAULT_ISSUE_TYPE_ID = 10004;
-const JIRA_DNS = process.env.JIRA_DNS ?? DEFAULT_JIRA_DNS;
-const JIRA_PORT = process.env.JIRA_PORT ?? DEFAULT_JIRA_PORT;
-const ISSUE_TYPE_ID = process.env.ISSUE_TYPE_ID ?? DEFAULT_ISSUE_TYPE_ID;
 
 const https = require('https');
 const express = require('express');
+const auth = require('./auth');
+const ticketCreator = require('./ticket-creator');
 
 const authMiddleware = (req, res, next) => {
     console.log('authMiddleware hit');
     const { authorization } = req.headers;
-    let expectedAuthHeaderValue = prepareAuthorizationHeader();
+    let expectedAuthHeaderValue = auth.prepareAuthorizationHeader();
 
     if (AUTHORIZATION_ENABLED == 0) {
         console.debug('AUTHORIZATION DISABLED!');
@@ -36,15 +31,11 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-function prepareAuthorizationHeader() {
-    return 'Basic ' + Buffer.from(process.env.JIRA_USER + ':' + process.env.JIRA_TOKEN).toString('base64');
-}
-
 function gateway() {
     const router = express.Router();
     router.post('/ticket-created', (request, response) => {
         console.debug('createTicket attempt');
-        createTicket(request, response);
+        ticketCreator.createTicket(request, response);
         //TODO: alert ticket creation
     });
 
@@ -59,107 +50,14 @@ function gateway() {
     return router;
 }
 
-function createTicket(globalRequest, globalResponse) {
-    // parse info about created ticket
-    let eventType = globalRequest.body.webhookEvent
-    let ticket = globalRequest.body.issue;
-    let summary = ticket.fields.summary;
-    let description = ticket.fields.description;
-    let requestTypeId = ticket.fields.customfield_10617.requestType.id;
-    let requestTypeName = ticket.fields.customfield_10617.requestType.name;
-
-    console.debug('eventType: ' + eventType);
-    console.debug('id: ' + ticket.id);
-    console.debug('key: ' + ticket.key);
-    console.debug('issue type: ' + ticket.fields.issuetype.name);
-    console.debug('issue status: ' + ticket.fields.status.name);
-    console.debug('project: ' + ticket.fields.project.name);
-    console.debug('summary: ' + summary);
-    console.debug('description: ' + description);
-    console.debug('requestTypeId: ' + requestTypeId);
-    console.debug('requestTypeName: ' + requestTypeName);
-
-    // prepare request
-    let ticketRequest = {
-        fields: {
-            project:
-                {
-                    id: DEFAULT_PROJECT_ID
-                },
-            summary: summary,
-            description: description,
-            issuetype: {
-                id: ISSUE_TYPE_ID
-            },
-            labels: ["jira-echo"]
-        },
-        update: {
-            issuelinks: [
-                {
-                    add: {
-                        type: {
-                            name: "Relates",
-                            inward: "is caused by",
-                            outward: "causes"
-                        },
-                        inwardIssue: {
-                            key: ticket.key
-                        }
-                    }
-                }
-            ],
-        }
-    };
-
-    const authorizationHeader = prepareAuthorizationHeader();
-    const requestData = JSON.stringify(ticketRequest);
-    const options = {
-        hostname: JIRA_DNS,
-        port: JIRA_PORT,
-        path: '/rest/api/2/issue/',
-        method: 'POST',
-        headers: {
-            'Authorization': authorizationHeader,
-            'Content-Type': 'application/json',
-            'Content-Length': requestData.length
-        }
-    }
-
-    console.debug('requestData');
-    console.debug(requestData);
-    console.debug('options');
-    console.debug(options);
-
-    const req = https.request(options, res => {
-        let responseData = '';
-        res.on('data', function (chunk) {responseData += chunk;});
-        res.on('end', function () {
-            console.debug('createTicket attempt complete');
-            console.debug('responseCode: ' + res.statusCode);
-            console.debug('responseData');
-            console.debug(responseData);
-            return globalResponse.status(res.statusCode).send(responseData);
-        });
-    })
-
-    req.on('error', error => {
-        console.error('createTicket error');
-        console.error(error.message);
-        return globalResponse.status(500).send(error.message);
-    })
-
-    req.write(requestData)
-    req.end()
-}
-
 function listWebhooks(globalRequest, globalResponse) {
     const options = {
-        hostname: JIRA_DNS,
-        port: JIRA_PORT,
+        hostname: auth.getJiraDns,
+        port: auth.getJiraPort,
         path: '/rest/webhooks/1.0/webhook/',
         method: 'GET',
         headers: {
-            'Authorization': prepareAuthorizationHeader(),
+            'Authorization': auth.prepareAuthorizationHeader(),
             'Accept': 'application/json',
         }
     }

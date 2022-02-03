@@ -10,7 +10,7 @@ services:
       - ./:/app
     environment:
       - PORT=80
-      - DEFAULT_PROJECT_ID=10545
+      - PROJECT_ID_DEFAULT=10545
       - ISSUE_TYPE_ID=10004
       - JIRA_USER=${JIRA_USER}
       - JIRA_TOKEN=${JIRA_TOKEN}
