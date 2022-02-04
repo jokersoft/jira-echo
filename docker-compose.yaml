@@ -15,6 +15,7 @@ services:
       - JIRA_USER=${JIRA_USER}
       - JIRA_TOKEN=${JIRA_TOKEN}
       - JIRA_DNS=${JIRA_DNS:-jira-echo.requestcatcher.com}
+      - JIRA_ECHO_VERSION=local
     ports:
       - "80:80"
     command: ["node", "server.js"]

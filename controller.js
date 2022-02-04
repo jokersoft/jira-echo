@@ -1,4 +1,5 @@
 const AUTHORIZATION_ENABLED = process.env.AUTHORIZATION_ENABLED;
+const VERSION = process.env.JIRA_ECHO_VERSION ?? 'unknown';
 
 const https = require('https');
 const express = require('express');
@@ -78,7 +79,7 @@ function listWebhooks(globalRequest, globalResponse) {
 }
 
 function health(request, response) {
-    response.status(200).send('{"status":"OK"}');
+    response.status(200).send('{"status":"OK","version":"' + VERSION + '"}');
 }
 
 module.exports.health = (request, response) => health(request, response);
