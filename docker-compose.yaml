@@ -11,7 +11,6 @@ services:
     environment:
       - PORT=80
       - PROJECT_ID_DEFAULT=10545
-      - ISSUE_TYPE_ID=10004
       - JIRA_USER=${JIRA_USER}
       - JIRA_TOKEN=${JIRA_TOKEN}
       - JIRA_DNS=${JIRA_DNS:-jira-echo.requestcatcher.com}

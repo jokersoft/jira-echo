@@ -49,7 +49,7 @@ function createTicket(globalRequest, globalResponse) {
     const ticket = globalRequest.body.issue;
     const summary = ticket.fields.summary;
     const description = ticket.fields.description;
-    const requestTypeId = ticket.fields.customfield_10617.requestType.id;
+    const requestTypeId = Number(ticket.fields.customfield_10617.requestType.id);
     const requestTypeName = ticket.fields.customfield_10617.requestType.name;
 
     // if custom field "Request Type" (`customfield_10617`) does not contain input - we cannot address it
