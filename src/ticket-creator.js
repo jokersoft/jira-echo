@@ -42,23 +42,31 @@ class JiraTicketCreateError extends Error {
     }
 }
 
-function getTargetIssueTypeId(projectId, requestTypeId, issueTypeId) {
-    console.log('getTargetIssueTypeId(' + projectId + ', ' + requestTypeId + ', ' + issueTypeId + ')');
-    if (requestTypeId === REQUEST_TYPE_ID_CRITICAL_INCIDENT) {
+function getTargetIssueTypeId(targetProjectId, sourceRequestTypeId, sourceIssueTypeId) {
+    console.log('getTargetIssueTypeId(' + targetProjectId + ', ' + sourceRequestTypeId + ', ' + sourceIssueTypeId + ')');
+    if (sourceRequestTypeId === REQUEST_TYPE_ID_CRITICAL_INCIDENT) {
         return ISSUE_TYPE_ID_INCIDENT;
     }
 
     ISSUE_TYPE_MAP.forEach(configMap => {
         console.debug(configMap);
-        if (configMap.projectId === projectId) {
-            console.debug('project config found: ' + projectId);
+        if (configMap.projectId === targetProjectId) {
+            console.debug('Project config found: ' + targetProjectId);
+            console.debug('issueTypeId: ' + sourceIssueTypeId);
+            console.debug('ISSUE_TYPE_ID_INCIDENT: ' + ISSUE_TYPE_ID_INCIDENT);
+            console.debug('equals: ' + (sourceIssueTypeId === ISSUE_TYPE_ID_INCIDENT));
+            console.debug('ISSUE_TYPE_ID_BUG: ' + ISSUE_TYPE_ID_BUG);
+            console.debug('equals: ' + (sourceIssueTypeId === ISSUE_TYPE_ID_BUG));
 
-            if (issueTypeId === ISSUE_TYPE_ID_INCIDENT) {
+            if (sourceIssueTypeId === ISSUE_TYPE_ID_INCIDENT) {
+                console.debug('Project incident config found: ' + configMap.issueTypeIdIncident);
                 return configMap.issueTypeIdIncident;
             }
-            if (issueTypeId === ISSUE_TYPE_ID_BUG) {
+            if (sourceIssueTypeId === ISSUE_TYPE_ID_BUG) {
+                console.debug('Project bug config found: ' + configMap.issueTypeIdBug);
                 return configMap.issueTypeIdBug;
             }
+            console.warn('No match in project config!');
         }
     });
     console.warn('Unsupported config [issueTypeId]!')
