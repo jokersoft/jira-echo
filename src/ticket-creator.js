@@ -49,7 +49,10 @@ function getTargetIssueTypeId(projectId, requestTypeId, issueTypeId) {
     }
 
     ISSUE_TYPE_MAP.forEach(configMap => {
+        console.debug(configMap);
         if (configMap.projectId === projectId) {
+            console.debug('project config found: ' + projectId);
+
             if (issueTypeId === ISSUE_TYPE_ID_INCIDENT) {
                 return configMap.issueTypeIdIncident;
             }
