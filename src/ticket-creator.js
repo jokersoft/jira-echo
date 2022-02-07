@@ -42,24 +42,23 @@ class JiraTicketCreateError extends Error {
     }
 }
 
-function getTargetIssueTypeId(projectId, requestTypeId) {
-    console.log('getTargetIssueTypeId(' + projectId + ', ' + requestTypeId + ')');
-    ISSUE_TYPE_MAP.forEach(configMap => {
-        if (configMap.projectId === projectId) {
-            if (requestTypeId === ISSUE_TYPE_ID_INCIDENT) {
-                return configMap.issueTypeIdIncident;
-            }
-            if (requestTypeId === ISSUE_TYPE_ID_BUG) {
-                return configMap.issueTypeIdBug;
-            }
-
-            console.warn('Unsupported config [issueTypeId]!');
-        }
-    });
-
+function getTargetIssueTypeId(projectId, requestTypeId, issueTypeId) {
+    console.log('getTargetIssueTypeId(' + projectId + ', ' + requestTypeId + ', ' + issueTypeId + ')');
     if (requestTypeId === REQUEST_TYPE_ID_CRITICAL_INCIDENT) {
         return ISSUE_TYPE_ID_INCIDENT;
     }
+
+    ISSUE_TYPE_MAP.forEach(configMap => {
+        if (configMap.projectId === projectId) {
+            if (issueTypeId === ISSUE_TYPE_ID_INCIDENT) {
+                return configMap.issueTypeIdIncident;
+            }
+            if (issueTypeId === ISSUE_TYPE_ID_BUG) {
+                return configMap.issueTypeIdBug;
+            }
+        }
+    });
+    console.warn('Unsupported config [issueTypeId]!')
 
     return ISSUE_TYPE_ID_BUG;
 }
@@ -88,6 +87,7 @@ function createTicket(request, callback) {
     const summary = ticket.fields.summary;
     const description = ticket.fields.description;
     const requestTypeId = Number(ticket.fields.customfield_10617.requestType.id);
+    const issueTypeId = Number(ticket.fields.issuetype.id);
     const requestTypeName = ticket.fields.customfield_10617.requestType.name;
 
     // if custom field "Request Type" (`customfield_10617`) does not contain input - we cannot address it
@@ -97,7 +97,7 @@ function createTicket(request, callback) {
     }
 
     const targetProjectId = getTargetProjectId(requestTypeId);
-    const targetIssueTypeId = getTargetIssueTypeId(targetProjectId, requestTypeId);
+    const targetIssueTypeId = getTargetIssueTypeId(targetProjectId, requestTypeId, issueTypeId);
 
     console.debug('eventType: ' + eventType);
     console.debug('id: ' + ticket.id);
@@ -171,8 +171,9 @@ function createTicket(request, callback) {
             console.log(res.statusCode);
 
             const responseJson = JSON.parse(responseData);
-            if (responseJson.errors) {
+            if (responseJson.errors || res.statusCode > 299) {
                 console.log(responseJson.errors);
+                throw new JiraTicketCreateError(res.statusCode);
             }
 
             callback(null, responseJson);
@@ -182,6 +183,7 @@ function createTicket(request, callback) {
     req.on('error', error => {
         console.error('createTicket error');
         console.error(error.message);
+        //TODO: slack on error
         throw new JiraTicketCreateError(error.message);
     })
 
