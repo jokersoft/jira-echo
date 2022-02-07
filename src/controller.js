@@ -32,15 +32,8 @@ function gateway() {
     router.post('/ticket-created', (request, response) => {
         console.debug('createTicket attempt');
         ticketCreator.createTicket(request, function (err, ticketCreateResult) {
-            console.log('err');
-            console.log(err);
-            console.log('ticketCreateResult');
-            console.log(ticketCreateResult);
-            console.log('slack.notifyTicketCreated');
             slack.notifyTicketCreated(request, ticketCreateResult);
-            console.log('EO slack.notifyTicketCreated');
         });
-        console.log('EO ticketCreator.createTicket');
         response.status(201).send('{"createTicket":"OK","version":"' + VERSION + '"}');
     });
 

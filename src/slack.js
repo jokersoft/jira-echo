@@ -19,8 +19,6 @@ function prepareAuthorizationHeader() {
 
 function prepareRequestPayload(ticket, ticketCreatedResponse) {
     const summary = ticket.fields.summary;
-    const description = ticket.fields.description ?? EMPTY_FIELD_DISPLAY_VALUE;
-    const teamTicketKey = ticketCreatedResponse.key;
 
     return JSON.stringify({
         channel: SLACK_CHANNEL,
@@ -58,8 +56,7 @@ function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
         let responseData = '';
         res.on('data', function (chunk) {responseData += chunk;});
         res.on('end', function () {
-            console.debug('status code:' + res.statusCode);
-            console.debug(responseData);
+            console.debug('status code: ' + res.statusCode);
             const responseJson = JSON.parse(responseData);
             if (!responseJson.ok) {
                 throw new SlackResponseError(responseJson.error);

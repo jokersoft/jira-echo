@@ -20,7 +20,6 @@ const REQUEST_TYPE_ID_CRITICAL_INCIDENT = 58;
 
 const https = require('https');
 const auth = require('./auth');
-const slack = require('./slack');
 
 const ISSUE_TYPE_MAP = [
     {
@@ -48,10 +47,7 @@ function getTargetIssueTypeId(targetProjectId, sourceRequestTypeId, sourceIssueT
         return ISSUE_TYPE_ID_INCIDENT;
     }
 
-    // for (let i = 0; i < ISSUE_TYPE_MAP.length; i++) {
     for (const configMap of ISSUE_TYPE_MAP) {
-        // let configMap = ISSUE_TYPE_MAP[i];
-        console.debug(configMap);
         if (configMap.projectId === targetProjectId) {
             console.debug('Project config found: ' + targetProjectId);
             console.debug('issueTypeId: ' + sourceIssueTypeId);
