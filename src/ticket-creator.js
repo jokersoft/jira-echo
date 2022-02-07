@@ -4,6 +4,7 @@ const PROJECT_ID_DEFAULT = process.env.PROJECT_ID_DEFAULT ?? PROJECT_ID_BUGS;
 
 const ISSUE_TYPE_ID_BUG = 10004;
 const ISSUE_TYPE_ID_INCIDENT = 10121;
+const ISSUE_TYPE_ID_BUG_SHERPA = 10158;
 
 const REQUEST_TYPE_ID_GENERAL_BUG = 48;
 const REQUEST_TYPE_ID_INVOICING_PAYMENT_AND_TAXATION = 49;
@@ -19,8 +20,42 @@ const REQUEST_TYPE_ID_CRITICAL_INCIDENT = 58;
 
 const https = require('https');
 const auth = require('./auth');
+const slack = require('./slack');
 
-function getTargetIssueTypeId(requestTypeId) {
+const ISSUE_TYPE_MAP = [
+    {
+        projectId: PROJECT_ID_BUGS,
+        issueTypeIdBug: ISSUE_TYPE_ID_BUG,
+        issueTypeIdIncident: ISSUE_TYPE_ID_INCIDENT,
+    },
+    {
+        projectId: PROJECT_ID_SHERPA,
+        issueTypeIdBug: ISSUE_TYPE_ID_BUG_SHERPA,
+        issueTypeIdIncident: ISSUE_TYPE_ID_BUG_SHERPA,
+    },
+];
+
+class JiraTicketCreateError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "JiraTicketCreateError";
+    }
+}
+
+function getTargetIssueTypeId(projectId, requestTypeId) {
+    ISSUE_TYPE_MAP.forEach(configMap => {
+        if (configMap.projectId === projectId) {
+            if (requestTypeId === ISSUE_TYPE_ID_INCIDENT) {
+                return configMap.issueTypeIdIncident;
+            }
+            if (requestTypeId === ISSUE_TYPE_ID_BUG) {
+                return configMap.issueTypeIdBug;
+            }
+
+            console.warn('Unsupported config [issueTypeId]!');
+        }
+    });
+
     if (requestTypeId === REQUEST_TYPE_ID_CRITICAL_INCIDENT) {
         return ISSUE_TYPE_ID_INCIDENT;
     }
@@ -43,10 +78,12 @@ function getTargetProjectId(requestTypeId) {
     return PROJECT_ID_DEFAULT;
 }
 
-function createTicket(globalRequest, globalResponse) {
+function createTicket(request, callback) {
+    console.debug('createTicket');
     // parse info about created ticket
-    const eventType = globalRequest.body.webhookEvent
-    const ticket = globalRequest.body.issue;
+    const eventType = request.body.webhookEvent
+    const ticket = request.body.issue;
+
     const summary = ticket.fields.summary;
     const description = ticket.fields.description;
     const requestTypeId = Number(ticket.fields.customfield_10617.requestType.id);
@@ -55,7 +92,7 @@ function createTicket(globalRequest, globalResponse) {
     // if custom field "Request Type" (`customfield_10617`) does not contain input - we cannot address it
     if (!requestTypeId) {
         console.error('RequestTypeId not set!');
-        return globalResponse.status(500).send('RequestTypeId not set!');
+        throw new JiraTicketCreateError('RequestTypeId not set!');
     }
 
     const targetProjectId = getTargetProjectId(requestTypeId);
@@ -132,18 +169,30 @@ function createTicket(globalRequest, globalResponse) {
             console.debug('responseCode: ' + res.statusCode);
             console.debug('responseData');
             console.debug(responseData);
-            return globalResponse.status(res.statusCode).send(responseData);
+
+            //TODO rm mock
+            responseData = JSON.stringify({
+                id: "38077",
+                key: "BS-2",
+                self: "https://comtravo.atlassian.net/rest/api/2/issue/38077"
+            });
+
+            console.debug('callback');
+            callback(null, JSON.parse(responseData));
+            console.debug('afterCallback');
         });
+        console.debug('createTicket https.request end');
     })
 
     req.on('error', error => {
         console.error('createTicket error');
         console.error(error.message);
-        return globalResponse.status(500).send(error.message);
+        throw new JiraTicketCreateError(error.message);
     })
 
-    req.write(requestData)
-    req.end()
+    req.write(requestData);
+    req.end();
+    console.debug('createTicket req.end()');
 }
 
-module.exports.createTicket = (request, response) => createTicket(request, response);
+module.exports.createTicket = createTicket;

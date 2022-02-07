@@ -5,6 +5,7 @@ const https = require('https');
 const express = require('express');
 const auth = require('./auth');
 const ticketCreator = require('./ticket-creator');
+const slack = require('./slack');
 
 const authMiddleware = (req, res, next) => {
     console.log('authMiddleware hit');
@@ -36,8 +37,16 @@ function gateway() {
     const router = express.Router();
     router.post('/ticket-created', (request, response) => {
         console.debug('createTicket attempt');
-        ticketCreator.createTicket(request, response);
-        //TODO: alert ticket creation
+        ticketCreator.createTicket(request, function (err, ticketCreateResult) {
+            console.log('err');
+            console.log(err);
+            console.log('ticketCreateResult');
+            console.log(ticketCreateResult);
+            console.log('slack.notifyTicketCreated');
+            slack.notifyTicketCreated(request, ticketCreateResult);
+            console.log('EO slack.notifyTicketCreated');
+        });
+        console.log('EO ticketCreator.createTicket');
     });
 
     router.get('/webhooks', (request, response) => {
