@@ -43,6 +43,7 @@ class JiraTicketCreateError extends Error {
 }
 
 function getTargetIssueTypeId(projectId, requestTypeId) {
+    console.log('getTargetIssueTypeId(' + projectId + ', ' + requestTypeId + ')');
     ISSUE_TYPE_MAP.forEach(configMap => {
         if (configMap.projectId === projectId) {
             if (requestTypeId === ISSUE_TYPE_ID_INCIDENT) {
@@ -96,7 +97,7 @@ function createTicket(request, callback) {
     }
 
     const targetProjectId = getTargetProjectId(requestTypeId);
-    const targetIssueTypeId = getTargetIssueTypeId(requestTypeId);
+    const targetIssueTypeId = getTargetIssueTypeId(targetProjectId, requestTypeId);
 
     console.debug('eventType: ' + eventType);
     console.debug('id: ' + ticket.id);
@@ -166,8 +167,15 @@ function createTicket(request, callback) {
             //     key: "BS-2",
             //     self: "https://comtravo.atlassian.net/rest/api/2/issue/38077"
             // });
+            console.log('res.statusCode');
+            console.log(res.statusCode);
 
-            callback(null, JSON.parse(responseData));
+            const responseJson = JSON.parse(responseData);
+            if (responseJson.errors) {
+                console.log(responseJson.errors);
+            }
+
+            callback(null, responseJson);
         });
     })
 
