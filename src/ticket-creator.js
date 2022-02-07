@@ -48,7 +48,9 @@ function getTargetIssueTypeId(targetProjectId, sourceRequestTypeId, sourceIssueT
         return ISSUE_TYPE_ID_INCIDENT;
     }
 
-    ISSUE_TYPE_MAP.forEach(configMap => {
+    // for (let i = 0; i < ISSUE_TYPE_MAP.length; i++) {
+    for (const configMap of ISSUE_TYPE_MAP) {
+        // let configMap = ISSUE_TYPE_MAP[i];
         console.debug(configMap);
         if (configMap.projectId === targetProjectId) {
             console.debug('Project config found: ' + targetProjectId);
@@ -68,7 +70,7 @@ function getTargetIssueTypeId(targetProjectId, sourceRequestTypeId, sourceIssueT
             }
             console.warn('No match in project config!');
         }
-    });
+    }
     console.warn('Unsupported config [issueTypeId]!')
 
     return ISSUE_TYPE_ID_BUG;
