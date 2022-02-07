@@ -144,6 +144,7 @@ function createTicket(request, callback) {
 
     const authorizationHeader = auth.prepareAuthorizationHeader();
     const requestData = JSON.stringify(ticketRequest);
+    console.debug(requestData);
     const options = {
         hostname: auth.getJiraDns,
         port: auth.getJiraPort,
