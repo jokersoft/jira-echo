@@ -24,6 +24,8 @@ function prepareRequestPayload(ticket, ticketCreatedResponse) {
 
     return JSON.stringify({
         channel: SLACK_CHANNEL,
+        as_user: false,
+        icon_emoji: ":rick-happy:",
         blocks: [
             {
                 type: "section",
@@ -38,11 +40,8 @@ function prepareRequestPayload(ticket, ticketCreatedResponse) {
 }
 
 function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
-    console.debug('notifyTicketCreated');
     const ticket = ticketRequest.body.issue;
     const requestData = prepareRequestPayload(ticket, ticketCreatedResponse);
-    console.debug('notifyTicketCreated requestData');
-    console.debug(requestData);
     const options = {
         hostname: 'slack.com',
         port: 443,
@@ -55,13 +54,10 @@ function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
         }
     }
 
-    console.log(options);
-
     const req = https.request(options, res => {
         let responseData = '';
         res.on('data', function (chunk) {responseData += chunk;});
         res.on('end', function () {
-            console.debug('notifyTicketCreated end started');
             console.debug('status code:' + res.statusCode);
             console.debug(responseData);
             const responseJson = JSON.parse(responseData);

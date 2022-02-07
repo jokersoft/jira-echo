@@ -156,20 +156,10 @@ function createTicket(request, callback) {
         }
     }
 
-    console.debug('requestData');
-    console.debug(requestData);
-    console.debug('options');
-    console.debug(options);
-
     const req = https.request(options, res => {
         let responseData = '';
         res.on('data', function (chunk) {responseData += chunk;});
         res.on('end', function () {
-            console.debug('createTicket attempt complete');
-            console.debug('responseCode: ' + res.statusCode);
-            console.debug('responseData');
-            console.debug(responseData);
-
             // responseData = JSON.stringify({
             //     id: "38077",
             //     key: "BS-2",

@@ -23,12 +23,6 @@ const authMiddleware = (req, res, next) => {
         next();
     } else {
         console.log('forbidden');
-        console.log('req.query.authorization');
-        console.log(req.query.authorization);
-        console.log('decodeURIComponent');
-        console.log(decodeURIComponent(req.query.authorization));
-        console.log('expectedAuthHeaderValue');
-        console.log(expectedAuthHeaderValue);
         res.sendStatus(403);
     }
 };
