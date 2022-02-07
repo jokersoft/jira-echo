@@ -47,6 +47,7 @@ function gateway() {
             console.log('EO slack.notifyTicketCreated');
         });
         console.log('EO ticketCreator.createTicket');
+        response.status(201).send('{"createTicket":"OK","version":"' + VERSION + '"}');
     });
 
     router.get('/webhooks', (request, response) => {

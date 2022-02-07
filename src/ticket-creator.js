@@ -170,18 +170,14 @@ function createTicket(request, callback) {
             console.debug('responseData');
             console.debug(responseData);
 
-            //TODO rm mock
-            responseData = JSON.stringify({
-                id: "38077",
-                key: "BS-2",
-                self: "https://comtravo.atlassian.net/rest/api/2/issue/38077"
-            });
+            // responseData = JSON.stringify({
+            //     id: "38077",
+            //     key: "BS-2",
+            //     self: "https://comtravo.atlassian.net/rest/api/2/issue/38077"
+            // });
 
-            console.debug('callback');
             callback(null, JSON.parse(responseData));
-            console.debug('afterCallback');
         });
-        console.debug('createTicket https.request end');
     })
 
     req.on('error', error => {
@@ -192,7 +188,6 @@ function createTicket(request, callback) {
 
     req.write(requestData);
     req.end();
-    console.debug('createTicket req.end()');
 }
 
 module.exports.createTicket = createTicket;
