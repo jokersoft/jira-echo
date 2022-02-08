@@ -3,8 +3,8 @@
 const DEFAULT_PORT = '80';
 const PORT = process.env.PORT ?? DEFAULT_PORT;
 
-const controller = require('./controller');
-const { authMiddleware, gateway } = require('./controller');
+const controller = require('./src/controller');
+const { authMiddleware, gateway } = require('./src/controller');
 const express = require('express');
 const app = express();
 

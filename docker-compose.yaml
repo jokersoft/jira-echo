@@ -10,11 +10,13 @@ services:
       - ./:/app
     environment:
       - PORT=80
-      - PROJECT_ID=10545
-      - ISSUE_TYPE_ID=10004
+      - PROJECT_ID_DEFAULT=10545
       - JIRA_USER=${JIRA_USER}
       - JIRA_TOKEN=${JIRA_TOKEN}
       - JIRA_DNS=${JIRA_DNS:-jira-echo.requestcatcher.com}
+      - JIRA_ECHO_VERSION=local
+      - SLACK_TOKEN=${SLACK_TOKEN}
+      - SLACK_CHANNEL=${SLACK_CHANNEL}
     ports:
       - "80:80"
     command: ["node", "server.js"]
