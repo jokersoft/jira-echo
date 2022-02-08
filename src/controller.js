@@ -5,6 +5,7 @@ const https = require('https');
 const express = require('express');
 const auth = require('./auth');
 const ticketCreator = require('./ticket-creator');
+const ticketStatus = require('./ticket-status');
 const slack = require('./slack');
 
 const authMiddleware = (req, res, next) => {
@@ -35,6 +36,14 @@ function gateway() {
             slack.notifyTicketCreated(request, ticketCreateResult);
         });
         response.status(201).send('{"createTicket":"OK","version":"' + VERSION + '"}');
+    });
+
+    router.post('/ticket-updated', (request, response) => {
+        console.debug('updateTicket attempt');
+        ticketStatus.update(request, function (err, ticketStatusUpdateResult) {
+            slack.notifyTicketUpdated(request, ticketStatusUpdateResult);
+        });
+        response.status(200).send('{"ticketStatusUpdate":"OK","version":"' + VERSION + '"}');
     });
 
     router.get('/webhooks', (request, response) => {
