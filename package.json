@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jokersoft/jira-echo#readme",
   "dependencies": {
     "express": "^4.17.2",
-    "http": "0.0.1-security"
+    "http": "0.0.1-security",
+    "js-yaml": "^4.1.0"
   }
 }

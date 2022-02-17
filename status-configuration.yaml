@@ -1,0 +1,16 @@
+BUGS:
+  watchStatusChange:
+    projectId: 10545
+    statusOpen: 10400
+    statusRequiresClarification: 10602
+    statusInProgress: 10838
+    statusDone: 10601
+    statusClose: 11111
+  updateRelatedTicketStatus:
+    BS:
+      projectId: 10546
+      statusOpen: 1
+      statusRequiresClarification: 4
+      statusInProgress: 3
+      statusDone: 5
+      statusClose: 6

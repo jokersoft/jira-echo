@@ -9,3 +9,4 @@
 - create and use Bot identity
 - tests
 - PubSub for events (webhooks reliability)
+- [evaluate proper logger](https://ibm-cloud-architecture.github.io/b2m-nodejs/logging/)
