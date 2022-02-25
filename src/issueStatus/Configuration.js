@@ -33,17 +33,31 @@ class Configuration {
     supportsUpdate(sourceProjectKey, targetProjectKey) {
         const projectConfig = this.forProject(sourceProjectKey);
 
-        return projectConfig.updateRelatedTicketStatus.hasOwnProperty(targetProjectKey);
+        return projectConfig.updateRelatedIssueStatus.hasOwnProperty(targetProjectKey);
+    }
+
+    getTransitionConfiguration(sourceProjectKey, targetProjectKey, statusFrom, statusTo) {
+        let matchingConfig;
+        const projectConfig = this.forProject(sourceProjectKey);
+        const targetProjectConfig = projectConfig.updateRelatedIssueStatus[targetProjectKey]
+
+        for (const config of targetProjectConfig) {
+            console.log('config');
+            console.log(config);
+            if (config.originFromStatus === statusFrom && config.originToStatus === statusTo) {
+                matchingConfig = config;
+            }
+        }
+
+        console.log('matchingConfig');
+        console.log(matchingConfig);
+        return matchingConfig;
     }
 
     forProject(projectKey) {
         let configuration = {};
 
         return this.configuration[projectKey];
-    }
-
-    get() {
-        return this.configuration;
     }
 }
 

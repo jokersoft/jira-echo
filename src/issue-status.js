@@ -1,11 +1,11 @@
 const https = require('https');
 const auth = require('./auth');
-const { ticketStatusEventEmitter } = require('./ticketStatus/TicketStatusEventEmitter.js');
+const { issueStatusEventEmitter } = require('./issueStatus/IssueStatusEventEmitter.js');
 
-class JiraTicketUpdateError extends Error {
+class JiraIssueUpdateError extends Error {
     constructor(message) {
         super(message);
-        this.name = "JiraTicketUpdateError";
+        this.name = "JiraIssueUpdateError";
     }
 }
 
@@ -49,15 +49,14 @@ function update(request, callback) {
 
     if (eventType !== 'jira:issue_updated') {
         console.error('Wrong eventType!');
-        throw new JiraTicketUpdateError('Wrong eventType!');
+        throw new JiraIssueUpdateError('Wrong eventType!');
     }
 
+    // Start status specific logics
     let statusFrom, statusTo;
 
-    //get status change
+    // get status change
     for (const changeRecord of changelogItems) {
-        console.log('changeRecord');
-        console.log(changeRecord);
         if (changeRecord.field === 'status') {
             statusFrom = changeRecord.from;
             statusTo = changeRecord.to;
@@ -70,7 +69,7 @@ function update(request, callback) {
         return;
     }
 
-    ticketStatusEventEmitter.emit('statusChanged:inProgress', requestPayload);
+    issueStatusEventEmitter.emit('statusChanged:inProgress', requestPayload);
 }
 
 module.exports.update = update;

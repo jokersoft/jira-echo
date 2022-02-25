@@ -1,18 +1,18 @@
 const { EventEmitter, errorMonitor } = require('events');
 const StatusToInProgressListener = require('./StatusToInProgressListener')
 
-class TicketStatusEventEmitter extends EventEmitter {}
+class IssueStatusEventEmitter extends EventEmitter {}
 
 const statusToInProgressListener = new StatusToInProgressListener();
-const ticketStatusEventEmitter = new TicketStatusEventEmitter();
+const issueStatusEventEmitter = new IssueStatusEventEmitter();
 
-ticketStatusEventEmitter.on(errorMonitor, (err) => {
+issueStatusEventEmitter.on(errorMonitor, (err) => {
     console.error(err);
 });
 
-ticketStatusEventEmitter.on('statusChanged:inProgress', (requestPayload) => {
+issueStatusEventEmitter.on('statusChanged:inProgress', (requestPayload) => {
     console.log('statusChanged:inProgress event occurred!');
     statusToInProgressListener.react(requestPayload);
 });
 
-module.exports.ticketStatusEventEmitter = ticketStatusEventEmitter;
+module.exports.issueStatusEventEmitter = issueStatusEventEmitter;

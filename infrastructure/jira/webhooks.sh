@@ -8,7 +8,7 @@ curl --location --request POST 'https://comtravo.atlassian.net/rest/webhooks/1.0
 --header 'Authorization: Basic ${BASIC_AUTH_HEADER}' \
 --data-raw '{
     "name": "BS issue created",
-    "url": "https://jira-echo.infra.comtravo.com/api/ticket-created?authorization=Basic%20${BASIC_AUTH_HEADER_ENCODED}",
+    "url": "https://jira-echo.infra.comtravo.com/api/issue-created?authorization=Basic%20${BASIC_AUTH_HEADER_ENCODED}",
     "events": [
         "jira:issue_created"
     ],
@@ -23,7 +23,7 @@ curl --location --request POST 'https://comtravo.atlassian.net/rest/webhooks/1.0
 --header 'Authorization: Basic ${BASIC_AUTH_HEADER}' \
 --data-raw '{
     "name": "BUGS issue updated",
-    "url": "https://jira-echo.infra.comtravo.com/api/ticket-updated?authorization=Basic%20${BASIC_AUTH_HEADER_ENCODED}",
+    "url": "https://jira-echo.infra.comtravo.com/api/issue-updated?authorization=Basic%20${BASIC_AUTH_HEADER_ENCODED}",
     "events": [
         "jira:issue_updated"
     ],
