@@ -1,0 +1,41 @@
+BUGS:
+  watchStatusChange:
+    - 10400 # Idea
+    - 10602 # Reopen
+    - 10838 # Review
+    - 10601 # Resolved
+  updateRelatedIssueStatus:
+    BS:
+      - originFromStatus: 10400
+        originToStatus: 10838
+        transitionId: 4 # start progress
+        additionalFields:
+          - name: update
+            value: "{\"comment\":[{\"add\":{\"body\":\"Automation status update\"}}]}"
+      - originFromStatus: 10602
+        originToStatus: 10838
+        transitionId: 4
+      - originFromStatus: 10838
+        originToStatus: 10400
+        transitionId: 301
+      - originFromStatus: 10838
+        originToStatus: 10601
+        transitionId: 5
+      - originFromStatus: 10602
+        originToStatus: 10601
+        transitionId: 5
+        additionalFields:
+          - name: update
+            value: "{\"comment\":[{\"add\":{\"body\":\"Automation status update\"}}]}"
+      - originFromStatus: 10838
+        originToStatus: 10601
+        transitionId: 5
+      - originFromStatus: 10400
+        originToStatus: 10601
+        transitionId: 5
+      - originFromStatus: 10601
+        originToStatus: 10602
+        transitionId: 3
+      - originFromStatus: 10601
+        originToStatus: 10602
+        transitionId: 3
