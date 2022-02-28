@@ -8,11 +8,6 @@ class IssueStatusUpdate {
     transitionIssue(issueKey, transitionConfiguration, callback) {
         // @see https://docs.atlassian.com/software/jira/docs/api/REST/7.11.0/#api/2/issue-doTransition
         let issueTransitionRequest = {
-            fields: {
-                "assignee": {
-                    name: "Unassigned"
-                },
-            },
             transition: {
                 id: transitionConfiguration.transitionId
             }
@@ -71,20 +66,25 @@ class IssueStatusUpdate {
                 console.log('res.statusCode');
                 console.log(res.statusCode);
 
-                const responseJson = JSON.parse(responseData);
-                if (responseJson.errors || res.statusCode > 299) {
-                    console.log(responseJson.errors);
-                    throw responseData;
+                let responseJson;
+
+                if (Number(res.statusCode) !== 204) {
+                    responseJson = JSON.parse(responseData);
                 }
 
-                callback(null, responseJson);
+                if (res.statusCode > 299) {
+                    console.log('IssueStatusUpdate error');
+                    throw 'IssueStatusUpdate error: ' + responseData;
+                }
+
+                if (undefined !== callback && typeof callback === 'function') {
+                    console.log('IssueStatusUpdate callback');
+                    callback(responseJson);
+                }
             });
         })
 
         req.on('error', error => {
-            console.error('createTicket error');
-            console.error(error.message);
-            //TODO: slack on error
             throw error.message;
         })
 

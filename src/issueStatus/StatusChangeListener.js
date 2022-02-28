@@ -1,7 +1,7 @@
 const Configuration = require('./Configuration');
 const IssueStatusUpdate = require('./IssueStatusUpdate');
 
-class StatusToInProgressListener {
+class StatusChangeListener {
     constructor() {
         this.configuration = new Configuration();
     }
@@ -48,16 +48,13 @@ class StatusToInProgressListener {
 
     performTicketTransition(issueKey, transitionConfiguration, callback) {
         console.debug('Updating ' + issueKey + ' with transitionId: ' + transitionConfiguration.transitionId);
-        console.log('To be implemented');
         let issueStatusUpdate = new IssueStatusUpdate();
-        issueStatusUpdate.transitionIssue(issueKey, transitionConfiguration);
-
-        return;
+        issueStatusUpdate.transitionIssue(issueKey, transitionConfiguration, callback);
     }
 
     /**
-     * @param {StatusToInProgressEvent} event
-     * @param {function} callback
+     * @param {event} event
+     * @param {function|null} callback
      * @return {void}
      */
     react(event, callback) {
@@ -103,17 +100,11 @@ class StatusToInProgressListener {
             console.log('transitionId');
             console.log(transitionConfiguration.transitionId);
 
-            //TODO error in targetTransitionId is null
+            //TODO error if targetTransitionId is null
 
-            //TODO: slack callback
-            this.performTicketTransition(relatedIssueKey, transitionConfiguration)
-        }
-
-        if (undefined !== callback && typeof callback === 'function') {
-            console.log('calling the callback');
-            callback(event);
+            this.performTicketTransition(relatedIssueKey, transitionConfiguration, callback)
         }
     }
 }
 
-module.exports = StatusToInProgressListener;
+module.exports = StatusChangeListener;

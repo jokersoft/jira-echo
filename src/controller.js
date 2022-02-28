@@ -33,6 +33,7 @@ function gateway() {
     router.post('/issue-created', (request, response) => {
         console.debug('createTicket attempt');
         ticketCreator.createTicket(request, function (err, ticketCreateResult) {
+            //TODO: slack on error
             slack.notifyTicketCreated(request, ticketCreateResult);
         });
         response.status(201).send('{"createTicket":"OK","version":"' + VERSION + '"}');
@@ -41,9 +42,10 @@ function gateway() {
     router.post('/issue-updated', (request, response) => {
         console.debug('updateTicket attempt');
         issueStatus.update(request, function (err, issueStatusUpdateResult) {
-            slack.notifyTicketUpdated(request, issueStatusUpdateResult);
+            //TODO: slack on error
+            slack.notifyTicketUpdated(request);
+            response.status(200).send('{"ticketStatusUpdate":"OK","version":"' + VERSION + '"}');
         });
-        response.status(200).send('{"ticketStatusUpdate":"OK","version":"' + VERSION + '"}');
     });
 
     router.get('/webhooks', (request, response) => {

@@ -17,7 +17,7 @@ function prepareAuthorizationHeader() {
     return 'Bearer ' + SLACK_TOKEN;
 }
 
-function prepareRequestPayload(ticket, ticketCreatedResponse) {
+function prepareTicketCreatedRequestPayload(ticket, ticketCreatedResponse) {
     const summary = ticket.fields.summary;
 
     return JSON.stringify({
@@ -36,9 +36,27 @@ function prepareRequestPayload(ticket, ticketCreatedResponse) {
         ]
     });
 }
-function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
+
+function prepareTicketUpdatedRequestPayload(ticketRequest) {
     const ticket = ticketRequest.body.issue;
-    const requestData = prepareRequestPayload(ticket, ticketCreatedResponse);
+
+    return JSON.stringify({
+        channel: SLACK_CHANNEL,
+        as_user: false,
+        icon_emoji: ":rick-happy:",
+        blocks: [
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: "Ticket <https://" + JIRA_DNS + '/browse/' + ticket.key + "|" + ticket.key + "> status updated (" + ticket.fields.status.name + ")",
+                }
+            }
+        ]
+    });
+}
+
+function notifySlack(text) {
     const options = {
         hostname: 'slack.com',
         port: 443,
@@ -47,7 +65,7 @@ function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
         headers: {
             'Authorization': prepareAuthorizationHeader(),
             'Content-Type': 'application/json',
-            'Content-Length': requestData.length
+            'Content-Length': text.length
         }
     }
 
@@ -70,13 +88,27 @@ function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
         throw new SlackResponseError(error.message);
     });
 
-    req.write(requestData);
+    req.write(text);
     req.end();
 }
 
-function notifyTicketUpdated(ticketRequest, ticketCreatedResponse) {
-    // TODO: implement
+function notifyTicketCreated(ticketRequest, ticketCreatedResponse) {
+    const ticket = ticketRequest.body.issue;
+    const requestData = prepareTicketCreatedRequestPayload(ticket, ticketCreatedResponse);
+    notifySlack(requestData);
+}
+
+function notifyTicketUpdated(ticketRequest) {
+    const requestData = prepareTicketUpdatedRequestPayload(ticketRequest);
+    notifySlack(requestData);
+}
+
+function notifyError(error) {
+    //TODO: use it!
+    console.error('slacking error');
+    console.error(error);
 }
 
 module.exports.notifyTicketCreated = (ticketRequest, ticketCreatedResponse) => notifyTicketCreated(ticketRequest, ticketCreatedResponse);
-module.exports.notifyTicketUpdated = (ticketRequest, ticketCreatedResponse) => notifyTicketUpdated(ticketRequest, ticketCreatedResponse);
+module.exports.notifyTicketUpdated = (ticketRequest) => notifyTicketUpdated(ticketRequest);
+module.exports.notifyError = (error) => notifyError(error);

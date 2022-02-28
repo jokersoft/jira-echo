@@ -49,6 +49,10 @@ class Configuration {
             }
         }
 
+        if (!matchingConfig) {
+            throw 'No matching config found for ticket transition ';
+        }
+
         console.log('matchingConfig');
         console.log(matchingConfig);
         return matchingConfig;

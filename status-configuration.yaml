@@ -1,45 +1,41 @@
 BUGS:
   watchStatusChange:
-    - 10400
-    - 10602
-    - 10838
-    - 10601
-    - 11111
+    - 10400 # Idea
+    - 10602 # Reopen
+    - 10838 # Review
+    - 10601 # Resolved
   updateRelatedIssueStatus:
     BS:
-      - originFromStatus: 10601
-        originToStatus: 10400
-        transitionId: 3
-#        additionalFields:
-#          fields.assignee.name: ${request.user.displayName} # TODO after
       - originFromStatus: 10400
         originToStatus: 10838
         transitionId: 4 # start progress
         additionalFields:
           - name: update
-            value: "{\"comment\":[{\"add\":{\"body\":\"Automation status update\"}}]}" # TODO now
-
-# BS
-#      projectId: 10546
-#      statusOpen: 1
-#      statusRequiresClarification: 4
-#      statusInProgress: 3
-#      statusDone: 5
-#      statusClose: 6
-
-# BUGS
-#    projectId: 10545
-#    statusOpen: 10400
-#    statusRequiresClarification: 10602
-#    statusInProgress: 10838
-#    statusDone: 10601
-
-# BUGS -- Reported (10400) -> In Progress (10838): BS -- Idea (1) -> Review (3) (Start progress): transitionId: 4
-
-
-
-
-
-
-# TODO:
-# - replace origin statusFrom with GET current status of related ticket
+            value: "{\"comment\":[{\"add\":{\"body\":\"Automation status update\"}}]}"
+      - originFromStatus: 10602
+        originToStatus: 10838
+        transitionId: 4
+      - originFromStatus: 10838
+        originToStatus: 10400
+        transitionId: 301
+      - originFromStatus: 10838
+        originToStatus: 10601
+        transitionId: 5
+      - originFromStatus: 10602
+        originToStatus: 10601
+        transitionId: 5
+        additionalFields:
+          - name: update
+            value: "{\"comment\":[{\"add\":{\"body\":\"Automation status update\"}}]}"
+      - originFromStatus: 10838
+        originToStatus: 10601
+        transitionId: 5
+      - originFromStatus: 10400
+        originToStatus: 10601
+        transitionId: 5
+      - originFromStatus: 10601
+        originToStatus: 10602
+        transitionId: 3
+      - originFromStatus: 10601
+        originToStatus: 10602
+        transitionId: 3

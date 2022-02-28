@@ -1,6 +1,6 @@
 const https = require('https');
 const auth = require('./auth');
-const { issueStatusEventEmitter } = require('./issueStatus/IssueStatusEventEmitter.js');
+const { issueStatusChangeEventEmitter } = require('./issueStatus/IssueStatusChangeEventEmitter.js');
 
 class JiraIssueUpdateError extends Error {
     constructor(message) {
@@ -69,7 +69,7 @@ function update(request, callback) {
         return;
     }
 
-    issueStatusEventEmitter.emit('statusChanged:inProgress', requestPayload);
+    issueStatusChangeEventEmitter.emit('IssueUpdated', requestPayload, callback);
 }
 
 module.exports.update = update;
