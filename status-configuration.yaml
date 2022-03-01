@@ -1,10 +1,10 @@
 BUGS:
-  watchStatusChange:
+  watchStatusChange: # only these statuses of BUGS project will be "watched" by jira-echo
     - 10400 # Idea
     - 10602 # Reopen
     - 10838 # Review
     - 10601 # Resolved
-  updateRelatedIssueStatus:
+  updateRelatedIssueStatus: # strategy to update related tickets
     BS:
       - originFromStatus: 10400
         originToStatus: 10838
