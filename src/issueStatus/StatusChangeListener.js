@@ -72,7 +72,7 @@ class StatusChangeListener {
 
         if (!this.isStatusWatched(event)) {
             console.debug('isStatusWatched NOT');
-            return;
+            throw 'Unsupported status';
         }
 
         const issueLinks = event.issue.fields.issuelinks;
@@ -96,11 +96,11 @@ class StatusChangeListener {
             console.log('transitionConfiguration');
             console.log(transitionConfiguration);
 
+            //TODO error if transitionConfiguration is null
+
             // get status id of target status from configuration
             console.log('transitionId');
             console.log(transitionConfiguration.transitionId);
-
-            //TODO error if targetTransitionId is null
 
             this.performTicketTransition(relatedIssueKey, transitionConfiguration, callback)
         }

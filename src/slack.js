@@ -39,6 +39,11 @@ function prepareTicketCreatedRequestPayload(ticket, ticketCreatedResponse) {
 
 function prepareTicketUpdatedRequestPayload(ticketRequest) {
     const ticket = ticketRequest.body.issue;
+    let relatedTicketKeysString = '';
+    for (const relatedTicket of ticketRequest.body.issue.fields.issuelinks) {
+        const ticketKey = relatedTicket.inwardIssue.key;
+        relatedTicketKeysString += "<https://" + JIRA_DNS + '/browse/' + ticketKey + "|" + ticketKey + "> ";
+    }
 
     return JSON.stringify({
         channel: SLACK_CHANNEL,
@@ -49,7 +54,8 @@ function prepareTicketUpdatedRequestPayload(ticketRequest) {
                 type: "section",
                 text: {
                     type: "mrkdwn",
-                    text: "Ticket <https://" + JIRA_DNS + '/browse/' + ticket.key + "|" + ticket.key + "> status updated (" + ticket.fields.status.name + ")",
+                    text: "Ticket <https://" + JIRA_DNS + '/browse/' + ticket.key + "|" + ticket.key + "> status updated (" + ticket.fields.status.name + ").\n" +
+                    "Related issues: " + relatedTicketKeysString,
                 }
             }
         ]
